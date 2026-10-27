@@ -1,1 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>打开 Apple Books</title>
+</head>
+<body style="font-family:system-ui;text-align:center;padding:60px 20px">
 
+  <h2>📖 打开 Apple Books</h2>
+  <p id="book"></p>
+
+  <a id="open"
+     style="display:inline-block;padding:14px 24px;
+            background:#2383e2;color:white;
+            border-radius:8px;text-decoration:none">
+    打开书籍
+  </a>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const book = params.get("book") || "";
+
+    document.getElementById("book").textContent = book;
+
+    const url = new URL("shortcuts://run-shortcut");
+    url.searchParams.set("name", "打开图书");
+    url.searchParams.set("input", "text");
+    url.searchParams.set("text", book);
+
+    document.getElementById("open").href = url.toString();
+  </script>
+</body>
+</html>
