@@ -1,34 +1,36 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>打开 Apple Books</title>
-</head>
-<body style="font-family:system-ui;text-align:center;padding:60px 20px">
-
-  <h2>📖 打开 Apple Books</h2>
-  <p id="book"></p>
-
-  <a id="open"
-     style="display:inline-block;padding:14px 24px;
-            background:#2383e2;color:white;
-            border-radius:8px;text-decoration:none">
-    打开书籍
-  </a>
-
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const book = params.get("book") || "";
-
-    document.getElementById("book").textContent = book;
-
-    const url = new URL("shortcuts://run-shortcut");
-    url.searchParams.set("name", "打开图书");
-    url.searchParams.set("input", "text");
-    url.searchParams.set("text", book);
-
-    document.getElementById("open").href = url.toString();
-  </script>
-</body>
-</html>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>打开 Apple Books</title>
+<style>
+body{font:17px/1.7 system-ui,-apple-system,sans-serif;background:#f7f8fa;color:#20252c;margin:0;padding:70px 22px}
+main{max-width:520px;margin:auto;background:white;border:1px solid #e5e7eb;border-radius:18px;padding:32px}
+h1{font-size:25px;margin:0 0 10px}#book{overflow-wrap:anywhere}
+a{display:inline-block;padding:12px 22px;background:#2383e2;color:white;border-radius:9px;text-decoration:none}
+small{display:block;color:#68707c;margin-top:22px}#status{color:#68707c}a[hidden]{display:none}
+</style></head>
+<body><main><h1>在「图书」中继续阅读</h1><p id="book"></p><p id="status"></p>
+<a id="open" hidden>打开书籍</a><small>请在保存了这本书的 Mac 上打开。首次跳转时，浏览器可能会询问是否允许打开「图书」。</small></main>
+<script>
+const query = new URLSearchParams(location.search);
+const fragment = new URLSearchParams(location.hash.slice(1));
+const param = key => fragment.get(key) || query.get(key) || "";
+const book = param("book");
+let id = param("id");
+// Compatibility for the original published link.
+if (!id && book === "非暴力沟通") id = "F100D95258820828AC187389BF7B586F";
+const button = document.getElementById("open");
+const status = document.getElementById("status");
+document.getElementById("book").textContent = book || "Apple Books";
+if (/^(?:[a-f0-9]{32}|[0-9]+)$/i.test(id)) {
+  const target = "ibooks://assetid/" + encodeURIComponent(id);
+  button.href = target;
+  button.hidden = false;
+  status.textContent = "正在打开对应书籍；若未自动跳转，请点击下面的按钮。";
+  setTimeout(() => { location.href = target; }, 200);
+} else {
+  status.textContent = "此链接缺少有效的书籍 ID。请从 Mac 书库生成对应链接后再试。";
+}
+</script></body></html>
